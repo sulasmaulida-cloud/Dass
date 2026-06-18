@@ -555,7 +555,7 @@ export default function App() {
             <p className="text-xs text-slate-500 mt-1 font-medium">Silakan masuk menggunakan kredensial administrator yang aman.</p>
           </div>
 
-          <form onSubmit={handleAdminLoginSubmit} className="space-y-4">
+          <form onSubmit={handleAdminLoginSubmit} className="space-y-4" autoComplete="off">
             {adminError && (
               <div className="rounded-xl bg-red-50 border border-red-200 p-3.5 text-xs text-red-650 font-bold flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 shrink-0 text-red-550" />
@@ -573,10 +573,11 @@ export default function App() {
                   type="text" 
                   value={adminUsername}
                   onChange={(e) => setAdminUsername(e.target.value)}
-                  placeholder="admin" 
+                  placeholder="Masukkan username" 
                   className="w-full rounded-xl border border-slate-200 pl-10 pr-4 py-2.5 text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium"
                   id="admin-username-input"
                   required
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -591,10 +592,11 @@ export default function App() {
                   type="password" 
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="••••••••" 
+                  placeholder="Masukkan password" 
                   className="w-full rounded-xl border border-slate-200 pl-10 pr-4 py-2.5 text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium"
                   id="admin-password-input"
                   required
+                  autoComplete="new-password"
                 />
               </div>
             </div>
