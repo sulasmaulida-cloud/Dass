@@ -194,12 +194,12 @@ export const fetchResultsFromSupabase = async (): Promise<any[] | null> => {
       asalRuangan: item.asal_ruangan,
       umur: item.umur,
       gender: item.gender,
-      depresiScore: item.score_depresi,
-      kecemasanScore: item.score_kecemasan,
-      stresScore: item.score_stres,
-      depresiCategory: item.kategori_depresi,
-      kecemasanCategory: item.kategori_kecemasan,
-      stresCategory: item.kategori_stres,
+      scoreDepresi: item.score_depresi,
+      scoreKecemasan: item.score_kecemasan,
+      scoreStres: item.score_stres,
+      kategoriDepresi: item.kategori_depresi,
+      kategoriKecemasan: item.kategori_kecemasan,
+      kategoriStres: item.kategori_stres,
       jawaban: item.jawaban
     }));
   } catch (err) {
