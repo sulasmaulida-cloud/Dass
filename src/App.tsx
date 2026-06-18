@@ -35,7 +35,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer, 
-  Cell 
+  Cell,
+  Legend
 } from 'recharts';
 
 import { initAuth, googleSignIn, logout, getAccessToken } from './firebase';
@@ -114,6 +115,7 @@ export default function App() {
   const [roomFilter, setRoomFilter] = useState('Semua');
   const [categoryFilter, setCategoryFilter] = useState('Semua');
   const [selectedDetailResult, setSelectedDetailResult] = useState<SurveyResult | null>(null);
+  const [analyticsTab, setAnalyticsTab] = useState<'sebaran' | 'ruangan' | 'butir'>('sebaran');
 
   // History state with sample seeding
   const [history, setHistory] = useState<SurveyResult[]>(() => {
@@ -725,6 +727,196 @@ export default function App() {
               MULAI TES BARU
             </button>
           </div>
+        </div>
+
+        {/* Analytics & Academic Insights Section */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-5 gap-3">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-indigo-600" />
+              <div>
+                <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800">Analitik Statistik & Insight Akademis</h3>
+                <p className="text-[10px] text-slate-400 font-medium">Tinjauan tren klinis kuesioner DASS-42 berdasarkan sebaran gejala, unit ruangan, dan butir indikator secara real-time.</p>
+              </div>
+            </div>
+            
+            {/* Tab buttons */}
+            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold shrink-0 self-start sm:self-auto">
+              <button 
+                onClick={() => setAnalyticsTab('sebaran')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${analyticsTab === 'sebaran' ? 'bg-white text-indigo-650 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Sebaran Gejala
+              </button>
+              <button 
+                onClick={() => setAnalyticsTab('ruangan')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${analyticsTab === 'ruangan' ? 'bg-white text-indigo-650 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Profil Per Unit
+              </button>
+              <button 
+                onClick={() => setAnalyticsTab('butir')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${analyticsTab === 'butir' ? 'bg-white text-indigo-650 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Analisis Butir Soal
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          {analyticsTab === 'sebaran' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div className="lg:col-span-7 h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={(() => {
+                        const categories: SeverityCategory[] = ['Normal', 'Ringan', 'Sedang', 'Berat', 'Sangat Berat'];
+                        return categories.map(cat => ({
+                          name: cat,
+                          Depresi: history.filter(item => item.kategoriDepresi === cat).length,
+                          Kecemasan: history.filter(item => item.kategoriKecemasan === cat).length,
+                          Stres: history.filter(item => item.kategoriStres === cat).length,
+                        }));
+                      })()}
+                      margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="name" style={{ fontSize: '11px', fontWeight: 'bold' }} tickLine={false} />
+                      <YAxis style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
+                      <Tooltip contentStyle={{ borderRadius: '12px', borderColor: '#e2e8f0', fontSize: '12px' }} />
+                      <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
+                      <Bar dataKey="Depresi" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Kecemasan" fill="#10b981" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Stres" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="lg:col-span-5 space-y-3 text-left">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-600 leading-relaxed font-medium">
+                    <p className="font-extrabold text-slate-800 text-sm mb-1.5 uppercase tracking-wide">Interpretasi Akademis (Prevalensi)</p>
+                    <p className="mb-2">
+                      Grafik ini menggambarkan perbandingan tingkat keparahan pada tiga dimensi kesehatan mental utama dari seluruh responden yang terdaftar. 
+                    </p>
+                    <p className="mb-2">
+                      Secara akademis, jika bar <strong>Kecemasan (Hijau)</strong> atau <strong>Stres (Oranye)</strong> mendominasi area berat/sangat berat, hal ini menunjukkan adanya tekanan situasional atau ketegangan otonom fisik yang aktif pada populasi saat ini. 
+                    </p>
+                    <p>
+                      Sebaliknya, peningkatan pada dimensi <strong>Depresi (Biru)</strong> mengindikasikan kelumpuhan motivasional jangka panjang atau penurunan afektif mendalam yang memerlukan intervensi klinis individual yang lebih mendesak.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {analyticsTab === 'ruangan' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div className="lg:col-span-7 h-64 w-full">
+                  {uniqueRooms.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={uniqueRooms.map(room => {
+                          const roomSubmissions = history.filter(item => item.asalRuangan === room);
+                          const count = roomSubmissions.length;
+                          return {
+                            room,
+                            Depresi: count > 0 ? Number((roomSubmissions.reduce((sum, item) => sum + item.scoreDepresi, 0) / count).toFixed(1)) : 0,
+                            Kecemasan: count > 0 ? Number((roomSubmissions.reduce((sum, item) => sum + item.scoreKecemasan, 0) / count).toFixed(1)) : 0,
+                            Stres: count > 0 ? Number((roomSubmissions.reduce((sum, item) => sum + item.scoreStres, 0) / count).toFixed(1)) : 0,
+                          };
+                        })}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <XAxis dataKey="room" style={{ fontSize: '11px', fontWeight: 'bold' }} tickLine={false} />
+                        <YAxis style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', borderColor: '#e2e8f0', fontSize: '12px' }} />
+                        <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
+                        <Bar dataKey="Depresi" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Kecemasan" fill="#10b981" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Stres" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-xs text-slate-400 font-semibold italic border border-dashed border-slate-200 rounded-xl">
+                      Belum ada data unit/ruangan terisi.
+                    </div>
+                  )}
+                </div>
+                <div className="lg:col-span-5 space-y-3 text-left">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-600 leading-relaxed font-medium">
+                    <p className="font-extrabold text-slate-800 text-sm mb-1.5 uppercase tracking-wide">Analisis Komparatif Antar Unit</p>
+                    <p className="mb-2">
+                      Membandingkan rerata skor DASS antar unit sangat penting untuk mendeteksi <strong>faktor stres spesifik lingkungan kerja (environmental/workplace stressors)</strong>.
+                    </p>
+                    <p>
+                      Unit dengan rerata skor Stres atau Kecemasan yang melampaui ambang batas normal (Depresi &gt; 9, Kecemasan &gt; 7, Stres &gt; 14) secara akademis mengindikasikan adanya ketimpangan beban kerja, ergonomi lingkungan yang buruk, atau sistem operasional yang jenuh, sehingga memerlukan restrukturisasi preventif sebelum memicu fenomena burnout massal.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {analyticsTab === 'butir' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-7 space-y-2.5">
+                  <p className="text-xs font-black uppercase text-slate-500 tracking-wider text-left">5 Indikator Keluhan Spesifik Teratas (Skor Rata-Rata Tertinggi)</p>
+                  <div className="space-y-2">
+                    {(() => {
+                      const itemScores = DASS_QUESTIONS.map(q => {
+                        const scores = history.map(item => item.jawaban[q.id] ?? 0);
+                        const avgScore = scores.length > 0 ? (scores.reduce((sum, val) => sum + val, 0) / scores.length) : 0;
+                        return {
+                          id: q.id,
+                          text: q.text,
+                          category: q.category,
+                          avgScore: Number(avgScore.toFixed(2))
+                        };
+                      });
+                      const top5 = [...itemScores].sort((a, b) => b.avgScore - a.avgScore).slice(0, 5);
+                      
+                      return top5.map((item, idx) => {
+                        let catBadge = "bg-indigo-50 text-indigo-700 border-indigo-150";
+                        if (item.category === "Kecemasan") catBadge = "bg-emerald-50 text-emerald-700 border-emerald-150";
+                        else if (item.category === "Stres") catBadge = "bg-amber-50 text-amber-700 border-amber-150";
+
+                        return (
+                          <div key={item.id} className="bg-slate-50 border border-slate-100 rounded-xl p-3 flex items-center justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <span className="flex h-5 w-5 rounded-full bg-slate-900 text-[10px] font-black text-white shrink-0 items-center justify-center font-mono mt-0.5">{idx + 1}</span>
+                              <div className="text-left flex-1">
+                                <p className="text-xs text-slate-700 font-bold leading-normal">{item.text}</p>
+                                <span className={`inline-flex px-1.5 py-0.5 rounded border text-[8px] font-black uppercase tracking-wider mt-1.5 ${catBadge}`}>{item.category} (Butir Q{item.id})</span>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <p className="text-base font-black font-mono text-slate-800">{item.avgScore}</p>
+                              <p className="text-[9px] text-slate-400 font-semibold font-mono">Skor Rerata (0-3)</p>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+                <div className="lg:col-span-5 space-y-3 text-left">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-600 leading-relaxed font-medium">
+                    <p className="font-extrabold text-slate-800 text-sm mb-1.5 uppercase tracking-wide">Analisis Butir (Item-Level Analytics)</p>
+                    <p className="mb-2">
+                      Dari kacamata klinis dan akademis, analisis pada level butir pernyataan mengidentifikasi <strong>jenis simptom atau ekspresi keluhan psikososial yang paling lazim dirasakan</strong> oleh responden secara kolektif.
+                    </p>
+                    <p>
+                      Mengetahui keluhan butir spesifik (misalnya: sulit bernapas, kehilangan ketertarikan, atau kesulitan rileks) memberikan petunjuk program promotif-preventif yang jauh lebih terarah. Dengan demikian, tim medis atau manajerial dapat merancang program intervensi spesifik (seperti latihan pernapasan rutin berkelompok, bimbingan afirmasi terstruktur, atau penataan ulang beban waktu pengerjaan) demi menargetkan akar gejala klinis yang paling mendominasi.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Database & Room Master Settings Grid */}
