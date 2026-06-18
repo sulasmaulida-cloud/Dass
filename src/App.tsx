@@ -1405,33 +1405,34 @@ export default function App() {
             </div>
 
             {/* Navigation links like domain/halaman */}
-            <div className="flex items-center space-x-2 border-l border-slate-200 pl-4 py-1 hidden md:flex">
+            <div className="flex items-center space-x-1 sm:space-x-2 border-l border-slate-200 pl-3 sm:pl-4 py-1">
               <button 
                 onClick={() => navigateTo('/')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                   currentPath !== '/admin' 
                     ? 'bg-indigo-50 text-indigo-700 font-black border border-indigo-200' 
                     : 'text-slate-600 hover:bg-slate-150 hover:text-slate-900 border border-transparent'
                 }`}
                 id="header-nav-kuesioner"
               >
-                <ClipboardCheck className="h-4 w-4" />
+                <ClipboardCheck className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
                 <span>Kuesioner</span>
+              </button>
+
+              <button 
+                onClick={() => navigateTo('/admin')}
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+                  currentPath === '/admin' 
+                    ? 'bg-indigo-50 text-indigo-700 font-black border border-indigo-200' 
+                    : 'text-slate-600 hover:bg-slate-150 hover:text-slate-900 border border-transparent'
+                }`}
+                id="header-nav-admin"
+              >
+                <Lock className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
+                <span>Admin</span>
               </button>
             </div>
           </div>
-
-          {/* Fallback Nav for Mobile only */}
-          {currentPath === '/admin' && (
-            <div className="flex items-center space-x-2 my-2 md:hidden">
-              <button 
-                onClick={() => navigateTo('/')}
-                className="px-2.5 py-1 rounded-md text-xs font-bold transition cursor-pointer bg-slate-100 text-slate-600"
-              >
-                Kembali ke Kuesioner
-              </button>
-            </div>
-          )}
 
           {/* Sync status active indicator (read-only on public view) */}
           <div className="mt-2 flex items-center space-x-3 md:mt-0 animate-fade-in">
