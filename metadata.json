@@ -1,0 +1,6 @@
+{
+  "name": "Aplikasi Survey TES DASS-42",
+  "description": "Aplikasi Survei TES DASS-42 dengan analisis otomatis depresi, kecemasan, dan stres, ekspor PDF, dan integrasi Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
